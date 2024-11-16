@@ -1,90 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor Finder</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutor Finder</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .hero {
+      background-color: grey;
+      color: white;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+    }
+    .features, .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .features div, .testimonial {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    .testimonial img {
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      margin-bottom: 0.5rem;
+    }
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+    footer a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Tutor Finder</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="login.html">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="signup.html">Sign Up</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Tutor Finder</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-outline-light ms-2" style="margin-bottom:5px;" href="#">Sign Up</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-outline-light ms-2" href="#">Log In</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
 
-    <header class="bg-primary text-white text-center py-4">
-        <h1>Tutor Finder</h1>
-        <p>Find the perfect tutor for your needs!</p>
-    </header>
+<div class="hero">
+  <h1>Find the Best Tutors Anytime, Anywhere!</h1>
+  <p>Connect with top-rated tutors for every subject and skill.</p>
+</div>
 
-    <section class="hero bg-light text-center py-5">
-        <div class="container">
-            <h2>Discover Your Learning Path</h2>
-            <p>Connect with experienced tutors in various subjects.</p>
-            <a href="#features" class="btn btn-primary">Learn More</a>
-        </div>
-    </section>
+<section class="py-5 text-center">
+  <div class="container">
+    <h2>Why Choose Us?</h2>
+    <div class="features mt-4">
+      <div>
+        <i>🎓</i>
+        <h3>Qualified Tutors</h3>
+        <p>Verified experts in every field.</p>
+      </div>
+      <div>
+        <i>🌐</i>
+        <h3>Flexible Learning</h3>
+        <p>Learn online or in-person.</p>
+      </div>
+      <div>
+        <i>💰</i>
+        <h3>Affordable Rates</h3>
+        <p>Lessons starting at just $10/hour.</p>
+      </div>
+      <div>
+        <i>🔒</i>
+        <h3>Secure Platform</h3>
+        <p>Safe and easy transactions.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section id="features" class="py-5">
-        <div class="container">
-            <h2 class="text-center">Features</h2>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Search Tutors</h5>
-                            <p class="card-text">Find tutors by subject, location, and availability.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Book Sessions</h5>
-                            <p class="card-text">Easily book sessions with your chosen tutor.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Ratings & Reviews</h5>
-                            <p class="card-text">Read reviews from other students to find the best tutor.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="py-5 text-center bg-light">
+  <div class="container">
+    <h2>What Our Students Say</h2>
+    <div class="testimonials mt-4">
+      <div class="testimonial">
+        <img src="https://via.placeholder.com/60" alt="Student">
+        <p>"This platform helped me find the perfect math tutor!"</p>
+        <p>⭐⭐⭐⭐⭐</p>
+      </div>
+      <div class="testimonial">
+        <img src="https://via.placeholder.com/60" alt="Student">
+        <p>"Flexible and affordable lessons, highly recommend!"</p>
+        <p>⭐⭐⭐⭐⭐</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    
-    <footer class="bg-dark text-white text-center py-4">
-        <p>&copy; 2024 Tutor Finder. All rights reserved.</p>
-    </footer>
+<footer>
+  <p>&copy; 2024 Tutor Finder | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+</footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
