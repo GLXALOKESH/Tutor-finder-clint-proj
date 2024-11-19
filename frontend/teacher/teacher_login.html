@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login - Tutor Finder</title>
+    <title>Teacher Login - Tutor Finder</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         html, body {
@@ -21,15 +21,15 @@
 <body>
 
     <div class="container content mt-5">
-        <h2 class="text-center">Student Login</h2>
-        <form>
+        <h2 class="text-center">Teacher Login</h2>
+        <form id="teacherLoginForm">
             <div class="form-group">
-                <label for="studentEmail">Email address</label>
-                <input type="email" class="form-control" id="studentEmail" placeholder="Enter email" required>
+                <label for="teacherEmail">Email address</label>
+                <input type="email" class="form-control" id="teacherEmail" placeholder="Enter email" required>
             </div>
             <div class="form-group">
-                <label for="studentPassword">Password</label>
-                <input type="password" class="form-control" id="studentPassword" placeholder="Password" required>
+                <label for="teacherPassword">Password</label>
+                <input type="password" class="form-control" id="teacherPassword" placeholder="Password" required>
             </div>
             <button type="submit" class="btn btn-info btn-block">Login</button>
         </form>
@@ -46,5 +46,53 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../utility/fun.js"></script>
+    <script>
+        
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginForm = document.getElementById("teacherLoginForm");
+
+            loginForm.addEventListener("submit", async (event) => {
+                event.preventDefault(); // Prevent form submission refresh
+
+                const email = document.getElementById("teacherEmail").value.trim();
+                const password = document.getElementById("teacherPassword").value.trim();
+
+                // Basic validation
+                if (!email || !password) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${urlport}/api/auth/login`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ email, password }),
+                    });
+
+                    const result = await response.json();
+                    console.log(result);
+                    
+
+                    if (response.ok) {
+                        alert("Login successful!");
+                        // Save token to localStorage if applicable
+                        setCookie("auth_token", result.token, 9);
+                        // Redirect to the teacher dashboard
+                        window.location.href = "./teacher_profile.html"; // Adjust path as needed
+                    } else {
+                        alert(`Login failed: ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error("Error during login:", error);
+                    alert("An error occurred while trying to log in. Please try again later.");
+                }
+            });
+        });
+    </script>
 </body>
 </html>

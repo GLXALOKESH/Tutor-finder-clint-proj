@@ -25,15 +25,58 @@
         <form>
             <div class="form-group">
                 <label for="teacherName">Full Name</label>
-                <input type="text" class="form-control" id="teacherName" placeholder="Enter your name" required>
+                <input name="teacherName" type="text" class="form-control" id="teacherName" placeholder="Enter your name" required>
             </div>
             <div class="form-group">
-                <label for="teacherEmail">Email address</label>
-                <input type="email" class="form-control" id="teacherEmail" placeholder="Enter email" required>
+                <label for="teacherEmail">Email Address</label>
+                <input name="teacherEmail" type="email" class="form-control" id="teacherEmail" placeholder="Enter email" required>
             </div>
             <div class="form-group">
                 <label for="teacherPassword">Password</label>
-                <input type="password" class="form-control" id="teacherPassword" placeholder="Enter password" required>
+                <input name="teacherPassword" type="password" class="form-control" id="teacherPassword" placeholder="Enter password" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherGender">Gender</label>
+                <select name="teacherGender" class="form-control" id="teacherGender" required>
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="teacherAge">Age</label>
+                <input name="teacherAge" type="number" class="form-control" id="teacherAge" placeholder="Enter your age" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherQualification">Qualification</label>
+                <input name="teacherQualification" type="text" class="form-control" id="teacherQualification" placeholder="Enter your qualification" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherExperience">Teaching Experience (in years)</label>
+                <input name="teacherExperience" type="number" class="form-control" id="teacherExperience" placeholder="Enter your experience" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherSubjects">Subjects You Can Teach</label>
+                <input name="teacherSubjects" type="text" class="form-control" id="teacherSubjects" placeholder="Enter subjects (comma-separated)" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherContact">Contact Number</label>
+                <input name="teacherContact" type="tel" class="form-control" id="teacherContact" placeholder="Enter your contact number" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherState">State</label>
+                <input name="teacherState" type="text" class="form-control" id="teacherState" placeholder="Enter your state" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherPin">Pin Number</label>
+                <input name="teacherPin" type="text" class="form-control" id="teacherPin" placeholder="Enter your Pin" required>
+            </div><div class="form-group">
+                <label for="teacherVillage">Village</label>
+                <input name="teacherVillage" type="text" class="form-control" id="teacherVillage" placeholder="Enter your Village" required>
+            </div><div class="form-group">
+                <label for="teacherDistrict">District</label>
+                <input name="teacherDistrict" type="text" class="form-control" id="teacherDistrict" placeholder="Enter your District" required>
             </div>
             <button type="submit" class="btn btn-success btn-block">Sign Up</button>
         </form>
@@ -49,5 +92,94 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../utility/fun.js"></script>
+    <script>
+        // Function to handle form submission
+        async function handleSignup(event, role) {
+            event.preventDefault(); // Prevent page refresh
+
+            const form = event.target; // The form element
+            const formData = new FormData(form); // Create FormData object
+
+            // Extract individual variables
+            const name = formData.get('teacherName').trim();
+            const email = formData.get('teacherEmail').trim();
+            const password = formData.get('teacherPassword').trim();
+            const gender = formData.get('teacherGender');
+            const age = formData.get('teacherAge').trim();
+            const qualification = formData.get('teacherQualification').trim();
+            const experience = formData.get('teacherExperience').trim();
+            const subjects = formData.get('teacherSubjects').trim().split(",");
+
+            const phone_no = formData.get('teacherContact').trim();
+            const state = formData.get('teacherState').trim();
+            const pin = formData.get('teacherPin').trim();
+            const village = formData.get('teacherVillage').trim();
+            const district = formData.get('teacherDistrict').trim();
+
+            const user_name = email.split('@')[0]; // Derive username from email
+
+            // Create data object to send to backend
+            const data = {
+                name,
+                email,
+                password,
+                gender,
+                age,
+                qualification,
+                experience,
+                subjects,
+                phone_no,
+                state,
+                pin,
+                village,
+                district,
+                user_name,
+                account_type:role, // 'teacher'
+            };
+
+            // Validate required fields
+            for (const [key, value] of Object.entries(data)) {
+                if (!value) {
+                    alert(`${key} is required.`);
+                    return;
+                }
+            }
+
+            try {
+                // Send data to backend
+                const response = await fetch(`${urlport}/api/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    
+                    alert('Signup successful!');
+                    form.reset(); // Clear the form
+                    window.location.href = `./teacher_login.html`;
+                } else {
+                    alert(`Signup failed: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while signing up.');
+            }
+        }
+
+        // Attach event listener to the form
+        document.addEventListener('DOMContentLoaded', () => {
+            const teacherForm = document.querySelector('form');
+            if (teacherForm) {
+                teacherForm.addEventListener('submit', (event) => handleSignup(event, 'teacher'));
+            }
+        });
+    </script>
+    
 </body>
 </html>
