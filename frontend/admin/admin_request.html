@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Requests</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #343a40;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      overflow-y: auto;
+      transition: transform 0.3s ease-in-out;
+      z-index: 1050;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 15px;
+      text-align: left;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+    }
+
+    .sidebar ul li a:hover {
+      background-color: #495057;
+      border-radius: 5px;
+      padding-left: 15px;
+    }
+
+    .content-container {
+      margin-left: 250px;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .request-card {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .request-card h5 {
+      color: #343a40;
+    }
+
+    .btn-approve {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-approve:hover {
+      background-color: #218838;
+    }
+
+    .btn-reject {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-reject:hover {
+      background-color: #c82333;
+    }
+
+    @media (max-width: 768px) {
+      .content-container {
+        margin-left: 0;
+      }
+
+      .sidebar {
+        width: 200px;
+        left: -200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <ul>
+      <li><a href="./admin_dashboard.html">Dashboard</a></li>
+      <li><a href="./admin_request.html">Requests</a></li>
+      <li><a href="./admin_manage_user.html">Users</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-container">
+    <div class="container mt-4">
+      <h1 class="text-center mb-4">Teacher Approval Requests</h1>
+
+      <!-- Requests Section -->
+      <div id="requests-container">
+        <!-- Requests dynamically loaded here -->
+        <div class="request-card">
+          <h5>Teacher Details</h5>
+          <p><strong>Name:</strong> John Doe</p>
+          <p><strong>Email:</strong> john.doe@example.com</p>
+          <p><strong>Password:</strong> password123</p>
+          <p><strong>Gender:</strong> Male</p>
+          <p><strong>Age:</strong> 30</p>
+          <p><strong>Qualification:</strong> M.Sc in Physics</p>
+          <p><strong>Experience:</strong> 5 Years</p>
+          <p><strong>Subjects:</strong> Physics, Mathematics</p>
+          <p><strong>Phone No:</strong> +91 9876543210</p>
+          <p><strong>State:</strong> Maharashtra</p>
+          <p><strong>PIN:</strong> 400001</p>
+          <p><strong>Village:</strong> Sample Village</p>
+          <p><strong>District:</strong> Sample District</p>
+          <p><strong>Username:</strong> johndoe</p>
+          <div class="mt-3">
+            <button class="btn-approve" onclick="handleApprove('John Doe')">Approve</button>
+            <button class="btn-reject" onclick="handleReject('John Doe')">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchRequests() {
+      // Simulated data fetching - replace with API call
+      const requests = [
+        {
+          name: "John Doe",
+          email: "john.doe@example.com",
+          password: "password123",
+          gender: "Male",
+          age: 30,
+          qualification: "M.Sc in Physics",
+          experience: "5 Years",
+          subjects: "Physics, Mathematics",
+          phone_no: "+91 9876543210",
+          state: "Maharashtra",
+          pin: "400001",
+          village: "Sample Village",
+          district: "Sample District",
+          user_name: "johndoe",
+        },
+      ];
+
+      const requestsContainer = document.getElementById("requests-container");
+      requestsContainer.innerHTML = "";
+
+      requests.forEach((request) => {
+        const requestCard = document.createElement("div");
+        requestCard.classList.add("request-card");
+        requestCard.innerHTML = `
+          <h5>Teacher Details</h5>
+          <p><strong>Name:</strong> ${request.name}</p>
+          <p><strong>Email:</strong> ${request.email}</p>
+          <p><strong>Password:</strong> ${request.password}</p>
+          <p><strong>Gender:</strong> ${request.gender}</p>
+          <p><strong>Age:</strong> ${request.age}</p>
+          <p><strong>Qualification:</strong> ${request.qualification}</p>
+          <p><strong>Experience:</strong> ${request.experience}</p>
+          <p><strong>Subjects:</strong> ${request.subjects}</p>
+          <p><strong>Phone No:</strong> ${request.phone_no}</p>
+          <p><strong>State:</strong> ${request.state}</p>
+          <p><strong>PIN:</strong> ${request.pin}</p>
+          <p><strong>Village:</strong> ${request.village}</p>
+          <p><strong>District:</strong> ${request.district}</p>
+          <p><strong>Username:</strong> ${request.user_name}</p>
+          <div class="mt-3">
+            <button class="btn-approve" onclick="handleApprove('${request.name}')">Approve</button>
+            <button class="btn-reject" onclick="handleReject('${request.name}')">Reject</button>
+          </div>
+        `;
+        requestsContainer.appendChild(requestCard);
+      });
+    }
+
+    function handleApprove(name) {
+      alert(`Teacher ${name} approved.`);
+      // Update the status in your database here
+    }
+
+    function handleReject(name) {
+      alert(`Teacher ${name} rejected.`);
+      // Update the status in your database here
+    }
+
+    window.onload = fetchRequests;
+  </script>
+</body>
+</html>

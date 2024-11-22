@@ -22,7 +22,7 @@
 
     <div class="container content mt-5">
         <h2 class="text-center">Admin Login</h2>
-        <form>
+        <form id="adminLoginForm">
             <div class="form-group">
                 <label for="adminEmail">Email address</label>
                 <input type="email" class="form-control" id="adminEmail" placeholder="Enter email" required>
@@ -45,5 +45,53 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../utility/fun.js"></script>
+    <script>
+         
+
+         document.addEventListener("DOMContentLoaded", () => {
+            const loginForm = document.getElementById("adminLoginForm");
+
+            loginForm.addEventListener("submit", async (event) => {
+                event.preventDefault(); // Prevent form submission refresh
+
+                const email = document.getElementById("adminEmail").value.trim();
+                const password = document.getElementById("adminPassword").value.trim();
+
+                // Basic validation
+                if (!email || !password) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${urlport}/api/admin/login`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ email, password }),
+                    });
+
+                    const result = await response.json();
+                    console.log(result);
+                    
+
+                    if (response.ok) {
+                        alert("Login successful!");
+                        // Save token to localStorage if applicable
+                        setCookie("auth_token", result.token, 9);
+                        // Redirect to the teacher dashboard
+                        window.location.href = "./admin_dashboard.html"; // Adjust path as needed
+                    } else {
+                        alert(`Login failed: ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error("Error during login:", error);
+                    alert("An error occurred while trying to log in. Please try again later.");
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 250px;
+      background-color: #343a40;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      overflow-y: auto;
+      transition: transform 0.3s ease-in-out;
+      z-index: 1050;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 15px;
+      text-align: left;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+    }
+
+    .sidebar ul li a:hover {
+      background-color: #495057;
+      border-radius: 5px;
+      padding-left: 15px;
+    }
+
+    .close-btn {
+      text-align: right;
+      padding: 10px;
+      cursor: pointer;
+      background: #495057;
+      color: white;
+      border: none;
+      width: 100%;
+    }
+
+    .close-btn:hover {
+      background: #6c757d;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1049;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    /* Main Content */
+    .content-container {
+      margin-left: 250px;
+      padding: 20px;
+      width: 100%;
+    }
+    .close-btn {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      .content-container {
+        margin-left: 0;
+      }
+
+      .sidebar {
+        width: 200px;
+        left: -200px;
+      }
+    .close-btn {
+      display: block;
+    }
+    }
+
+    /* Card Styles */
+    .stats-card {
+      background-color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    /* Reviews Section */
+    .review-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .review-item:last-child {
+      border-bottom: none;
+    }
+
+    .delete-btn {
+      color: white;
+      background-color: #dc3545;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Black Overlay -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="closeSidebar()">Close &times;</button>
+    <ul>
+      <li><a href="./admin_dashboard.html">Dashboard</a></li>
+      <li><a href="./admin_request.html">Requests</a></li>
+      <li><a href="./admin_manage_user.html">Users</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-container">
+    <!-- Navbar -->
+    <nav class="navbar navbar-light bg-light d-lg-none">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+      </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container mt-4">
+      <h1 class="text-center mb-4">Admin Dashboard</h1>
+
+      <!-- Statistics Section -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="stats-card p-4">
+            <h5>Total Registered Users</h5>
+            <h3 id="total-users" class="text-primary">0</h3>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stats-card p-4">
+            <h5>Total Approved Teachers</h5>
+            <h3 id="total-teachers" class="text-success">0</h3>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stats-card p-4">
+            <h5>Total Reviews</h5>
+            <h3 id="total-reviews" class="text-danger">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="card p-4">
+        <h4 class="mb-3">Student Reviews</h4>
+        <div id="reviews-list">
+          <!-- Reviews dynamically loaded here -->
+          <div class="review-item" data-id="1">
+            <div>
+              <strong>John Doe</strong>: Great teaching experience!
+              <div class="rating" >4.5 <strong style="color: goldenrod;"> &#9733 </strong></div>
+            </div>
+            <button class="delete-btn" onclick="deleteReview(this)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="../utility/fun.js"></script>
+  <script>
+    token = getCookie("authToken");
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      sidebar.classList.toggle("active");
+      overlay.classList.toggle("active");
+    }
+
+    function closeSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    }
+
+    async function fetchDashboardData() {
+      // Replace with API data
+
+      const response = fetch(`${urlport}/api/admin/`,{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({token})
+      })
+
+      data = await response.json();
+      if (!data.success) {
+        console.error("Failed to fetch dashboard data:", data.error);
+        return;
+      }
+      console.log(data);
+      
+
+      const totalUsers = 120;
+      const approvedTeachers = 35;
+      const reviews = [
+        { id: 1, name: "John Doe", text: "Great teaching experience!" },
+        { id: 2, name: "Jane Smith", text: "Helpful and clear lessons." },
+      ];
+
+      document.getElementById("total-users").textContent = totalUsers;
+      document.getElementById("total-teachers").textContent = approvedTeachers;
+      document.getElementById("total-reviews").textContent = reviews.length;
+
+      const reviewsList = document.getElementById("reviews-list");
+      reviewsList.innerHTML = "";
+
+      reviews.forEach((review) => {
+        const reviewItem = document.createElement("div");
+        reviewItem.classList.add("review-item");
+        reviewItem.dataset.id = review.reviewid;
+        reviewItem.innerHTML = `
+          <div><strong>${review.name}</strong>: ${review.text}</div>
+          <div class="rating" >${review.rating} <strong style="color: goldenrod;"> &#9733 </strong></div>
+          <button class="delete-btn" onclick="deleteReview(${review.id})">Delete</button>
+
+          
+        `;
+        reviewsList.appendChild(reviewItem);
+      });
+    }
+
+    function deleteReview(item) {
+
+      reviewId = item.closest("[data-id]").dataset.id;
+
+      
+
+      if (confirm("Are you sure you want to delete this review?")) {
+        const response = fetch(`${urlport}/api/admin/delete-review`,{
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({token, reviewId})
+      })
+        console.log(`Review with ID ${reviewId} deleted!`);
+        fetchDashboardData(); // Reload data
+      }
+    }
+
+    window.onload = fetchDashboardData;
+  </script>
+</body>
+</html>
