@@ -202,9 +202,9 @@
       </div>
     </div>
   </div>
-
+<script src="../utility/fun.js"></script>ipt
   <script>
-
+token = getCookie("auth_token")
 function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
       const overlay = document.getElementById("overlay");
@@ -220,6 +220,16 @@ function toggleSidebar() {
     }
     async function fetchRequests() {
       // Simulated data fetching - replace with API call
+      const response = fetch(`urlport`,{
+        method:"POST",
+        headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+       token
+      })
+      })
+      data = response.json()
       const requests = [
         {
           name: "John Doe",
@@ -245,6 +255,7 @@ function toggleSidebar() {
       requests.forEach((request) => {
         const requestCard = document.createElement("div");
         requestCard.classList.add("request-card");
+        requestCard.dataset.id = request.teacherId
         requestCard.innerHTML = `
           <h5>Teacher Details</h5>
           <p><strong>Name:</strong> ${request.name}</p>
@@ -271,6 +282,7 @@ function toggleSidebar() {
     }
 
     function handleApprove(name) {
+
       alert(`Teacher ${name} approved.`);
       // Update the status in your database here
     }
