@@ -178,7 +178,7 @@
       <!-- Requests Section -->
       <div id="requests-container">
         <!-- Requests dynamically loaded here -->
-        <div class="request-card">
+        <div class="request-card" data-id="1">
           <h5>Teacher Details</h5>
           <p><strong>Name:</strong> John Doe</p>
           <p><strong>Email:</strong> john.doe@example.com</p>
@@ -202,7 +202,7 @@
       </div>
     </div>
   </div>
-<script src="../utility/fun.js"></script>ipt
+<script src="../utility/fun.js"></script>
   <script>
 token = getCookie("auth_token")
 function toggleSidebar() {
@@ -273,22 +273,47 @@ function toggleSidebar() {
           <p><strong>District:</strong> ${request.district}</p>
           <p><strong>Username:</strong> ${request.user_name}</p>
           <div class="mt-3">
-            <button class="btn-approve" onclick="handleApprove('${request.name}')">Approve</button>
-            <button class="btn-reject" onclick="handleReject('${request.name}')">Reject</button>
+            <button class="btn-approve" onclick="handleApprove('${request.teacherId}')">Approve</button>
+            <button class="btn-reject" onclick="handleReject('${request.teacherId}')">Reject</button>
           </div>
         `;
         requestsContainer.appendChild(requestCard);
       });
     }
 
-    function handleApprove(name) {
-
-      alert(`Teacher ${name} approved.`);
+    function handleApprove(id) {
+      try {
+        const response = fetch('',{
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({token})
+        })
+        if(response.ok){
+          alert("accepted the request  : ",id )
+        }
+      } catch (error) {
+        console.error("Error when handeling request approve ",error)
+      }
       // Update the status in your database here
     }
 
-    function handleReject(name) {
-      alert(`Teacher ${name} rejected.`);
+    function handleReject(id) {
+      try {
+        const response = fetch('',{
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({token})
+        })
+        if(response.ok){
+          alert(" rejected the request : ",id )
+        }
+      } catch (error) {
+        console.error("Error when handeling request approve ",error)
+      }
       // Update the status in your database here
     }
 
