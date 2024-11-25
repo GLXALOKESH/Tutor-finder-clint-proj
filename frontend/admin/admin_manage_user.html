@@ -189,8 +189,9 @@
       </div>
     </div>
   </div>
-
+<script src="../utility/fun.js"></script>
   <script>
+    const token = getCookie("auth-token")
 
 function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
@@ -219,6 +220,22 @@ function toggleSidebar() {
       { id: 3, name: "Michael Brown" }
     ];
 
+    function fetchuser(){
+      try {
+        const response = fetch('',{
+          method:'POST',
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body: JSON.stringify({token})
+        })
+        const data = response.json()
+        teachers = data.teachers
+        students = data.students
+      } catch (error) {
+        
+      }
+    }
     function showTeachers() {
       document.getElementById("list-title").textContent = "Teacher List";
       updateActiveTab("teacher-tab");
