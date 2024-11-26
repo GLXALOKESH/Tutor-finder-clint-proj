@@ -125,53 +125,27 @@
       <!-- Requests Section -->
       <div id="requests-container">
         <!-- Requests dynamically loaded here -->
-        <div class="request-card">
-          <h5>Teacher Details</h5>
-          <p><strong>Name:</strong> John Doe</p>
-          <p><strong>Email:</strong> john.doe@example.com</p>
-          <p><strong>Password:</strong> password123</p>
-          <p><strong>Gender:</strong> Male</p>
-          <p><strong>Age:</strong> 30</p>
-          <p><strong>Qualification:</strong> M.Sc in Physics</p>
-          <p><strong>Experience:</strong> 5 Years</p>
-          <p><strong>Subjects:</strong> Physics, Mathematics</p>
-          <p><strong>Phone No:</strong> +91 9876543210</p>
-          <p><strong>State:</strong> Maharashtra</p>
-          <p><strong>PIN:</strong> 400001</p>
-          <p><strong>Village:</strong> Sample Village</p>
-          <p><strong>District:</strong> Sample District</p>
-          <p><strong>Username:</strong> johndoe</p>
-          <div class="mt-3">
-            <button class="btn-approve" onclick="handleApprove('John Doe')">Approve</button>
-            <button class="btn-reject" onclick="handleReject('John Doe')">Reject</button>
-          </div>
-        </div>
+        
       </div>
     </div>
   </div>
-
+<script src="../utility/fun.js"></script>
   <script>
+    const token = getCookie('auth_token');
     async function fetchRequests() {
       // Simulated data fetching - replace with API call
-      const requests = [
-        {
-          name: "John Doe",
-          email: "john.doe@example.com",
-          password: "password123",
-          gender: "Male",
-          age: 30,
-          qualification: "M.Sc in Physics",
-          experience: "5 Years",
-          subjects: "Physics, Mathematics",
-          phone_no: "+91 9876543210",
-          state: "Maharashtra",
-          pin: "400001",
-          village: "Sample Village",
-          district: "Sample District",
-          user_name: "johndoe",
+      const response = await fetch(`${urlport}/api/admin/unverified-teacher-list`,{
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json'
         },
-      ];
-
+        body: JSON.stringify({token}),
+      });
+      const data = await response.json();
+      console.log(data);
+      
+      const requests = data.list
+      
       const requestsContainer = document.getElementById("requests-container");
       requestsContainer.innerHTML = "";
 
@@ -181,8 +155,7 @@
         requestCard.innerHTML = `
           <h5>Teacher Details</h5>
           <p><strong>Name:</strong> ${request.name}</p>
-          <p><strong>Email:</strong> ${request.email}</p>
-          <p><strong>Password:</strong> ${request.password}</p>
+          <p><strong>Email:</strong> ${request.signup.email}</p>
           <p><strong>Gender:</strong> ${request.gender}</p>
           <p><strong>Age:</strong> ${request.age}</p>
           <p><strong>Qualification:</strong> ${request.qualification}</p>
@@ -193,22 +166,39 @@
           <p><strong>PIN:</strong> ${request.pin}</p>
           <p><strong>Village:</strong> ${request.village}</p>
           <p><strong>District:</strong> ${request.district}</p>
-          <p><strong>Username:</strong> ${request.user_name}</p>
           <div class="mt-3">
-            <button class="btn-approve" onclick="handleApprove('${request.name}')">Approve</button>
-            <button class="btn-reject" onclick="handleReject('${request.name}')">Reject</button>
+            <button class="btn-approve" onclick="handleApprove('${request.teacher_id}')">Approve</button>
+            <button class="btn-reject" onclick="handleReject('${request.teacher_id}')">Reject</button>
           </div>
         `;
         requestsContainer.appendChild(requestCard);
       });
     }
 
-    function handleApprove(name) {
-      alert(`Teacher ${name} approved.`);
+   async function handleApprove(id) {
+      const response = await fetch(`${urlport}/api/admin/verify-teacher`,{
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({token,teacher_id:id }),
+        
+      });
+      if(response.ok){
+      alert(`Teacher ${id} approved.`);
+      window.location.reload();
+      }
       // Update the status in your database here
     }
 
-    function handleReject(name) {
+    async function handleReject(id) {
+      const response = await fetch(`${urlport}/api/admin/`,{
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({token,id }),
+      });
       alert(`Teacher ${name} rejected.`);
       // Update the status in your database here
     }

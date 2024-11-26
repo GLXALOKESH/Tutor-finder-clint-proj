@@ -98,13 +98,16 @@
         <form id="editProfileForm">
           <div class="mb-3">
             <label for="editName" class="form-label">Name</label>
-            <input type="text" class="form-control" id="editName" >
+            <input type="text" class="form-control" id="editName" required>
           </div>
           <div class="mb-3">
             <label for="editEmail" class="form-label">Email</label>
-            <input type="email" class="form-control" id="editEmail" >
+            <input type="email" class="form-control" id="editEmail" required>
           </div>
-          
+          <div class="mb-3">
+            <label for="editPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="editPassword" required>
+          </div>
           <div class="mb-3">
             <label for="editGender" class="form-label">Gender</label>
             <select class="form-control" id="editGender">
@@ -115,22 +118,32 @@
           </div>
           <div class="mb-3">
             <label for="editAge" class="form-label">Age</label>
-            <input type="number" class="form-control" id="editAge" >
+            <input type="number" class="form-control" id="editAge" required>
           </div>
-          
+          <div class="mb-3">
+            <label for="editQualification" class="form-label">Qualification</label>
+            <input type="text" class="form-control" id="editQualification" required>
+          </div>
+          <div class="mb-3">
+            <label for="editExperience" class="form-label">Experience</label>
+            <input type="text" class="form-control" id="editExperience" required>
+          </div>
           <div class="mb-3">
             <label for="editSubjects" class="form-label">Subjects</label>
-            <input type="text" class="form-control" id="editSubjects" >
+            <input type="text" class="form-control" id="editSubjects" required>
           </div>
           <div class="mb-3">
             <label for="editContact" class="form-label">Contact</label>
-            <input type="text" class="form-control" id="editContact" >
+            <input type="text" class="form-control" id="editContact" required>
           </div>
           <div class="mb-3">
             <label for="editState" class="form-label">State</label>
-            <input type="text" class="form-control" id="editState" >
+            <input type="text" class="form-control" id="editState" required>
           </div>
-          
+          <div class="mb-3">
+            <label for="editUsername" class="form-label">Username</label>
+            <input type="text" class="form-control" id="editUsername" required>
+          </div>
           <button type="submit" class="btn btn-primary">Update Profile</button>
         </form>
       </div>
@@ -149,7 +162,7 @@
       <div class="modal-body">
         <p>Are you sure you want to delete your account? This action cannot be undone.</p>
         <label for="deletePassword" class="form-label">Enter Password to Confirm:</label>
-        <input type="password" class="form-control" id="deletePassword" >
+        <input type="password" class="form-control" id="deletePassword" required>
         <button class="btn btn-danger mt-3" id="confirmDeleteButton">Delete Account</button>
       </div>
     </div>
@@ -162,41 +175,34 @@
 <script>
 const token =getCookie("auth_token");
   // Initialize the sidebar
-  createSidebar('sidebar-container', "student");
+  createSidebar('sidebar-container', "teacher");
 
   // Handle Profile Update Form Submission
   document.getElementById('editProfileForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Get input elements
-  const fields = [
-    { key: 'name', value: document.getElementById('editName').value },
-    { key: 'email', value: document.getElementById('editEmail').value },
-    { key: 'gender', value: document.getElementById('editGender').value },
-    { key: 'age', value: document.getElementById('editAge').value },
-    
-    { key: 'subjects', value: document.getElementById('editSubjects').value },
-    { key: 'contact', value: document.getElementById('editContact').value },
-    { key: 'state', value: document.getElementById('editState').value }
-  ];
+    // Get input values
+    const name = document.getElementById('editName').value;
+    const email = document.getElementById('editEmail').value;
+    const password = document.getElementById('editPassword').value;
+    const gender = document.getElementById('editGender').value;
+    const age = document.getElementById('editAge').value;
+    const qualification = document.getElementById('editQualification').value;
+    const experience = document.getElementById('editExperience').value;
+    const subjects = document.getElementById('editSubjects').value;
+    const contact = document.getElementById('editContact').value;
+    const state = document.getElementById('editState').value;
+    const username = document.getElementById('editUsername').value;
 
-  // Filter out empty fields
-  const updatedData = {};
-  fields.forEach(field => {
-    if (field.value.trim() !== '') {
-      updatedData[field.key] = field.value.trim();
-    }
-  });
-
-  // Only proceed if there is data to send
-  if (Object.keys(updatedData).length > 0) {
     // Send updated profile data to backend
-    const response = await fetch(`${urlport}/api/user/edit-info`, {
+    const response = await fetch('/update-profile', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({token, data:updatedData})
+      body: JSON.stringify({
+        name, email, password, gender, age, qualification, experience, subjects, contact, state, username
+      })
     });
 
     if (response.ok) {
@@ -206,11 +212,7 @@ const token =getCookie("auth_token");
     } else {
       alert('Failed to update profile');
     }
-  } else {
-    alert('No fields to update!');
-  }
-});
-
+  });
 
   // Handle Account Deletion
   document.getElementById('confirmDeleteButton').addEventListener('click', async function () {

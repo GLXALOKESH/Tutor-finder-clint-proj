@@ -111,15 +111,19 @@
 <script>
   // Initialize the sidebar
   createSidebar('sidebar-container',"student");
+  const token = getCookie('auth_token')
 
   // Fetch the personal details and reviews data from backend
   function fetchUserData() {
+
+    
     // Example API endpoint for fetching user data (personal details and reviews)
     fetch(`${urlport}/api/user/info`,{
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${getCookie('auth_token')}`,
-      }
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({token})
     })
       .then(response => response.json())
       .then(data => {

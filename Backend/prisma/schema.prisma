@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Signup {
+  user_id      String @id @unique @default(uuid())
+  user_name    String @unique
+  password     String
+  email        String @unique
+  account_type String // Can be 'student' or 'teacher' or 'admin'
+
+  student Student? @relation("StudentSignup")
+  teacher Teacher? @relation("TeacherSignup")
+}
+
+model Student {
+  student_id String @id @unique @default(uuid())
+  user_id    String @unique
+  name       String
+  gender     String
+  age        Int
+  village    String
+  district   String
+  state      String
+  pin        String
+  phone_no   String
+
+  signup  Signup          @relation("StudentSignup", fields: [user_id], references: [user_id], onDelete: Cascade)
+  reviews TeacherReview[] @relation("StudentReview")
+
+  request TeacherRequest[] @relation("TeacherRequest")
+}
+
+model Teacher {
+  teacher_id    String  @id @unique @default(uuid())
+  user_id       String  @unique
+  name          String
+  gender        String
+  age           Int
+  subjects      Json
+  experience    Float
+  village       String
+  district      String
+  state         String
+  pin           String
+  phone_no      String
+  isVerified    Boolean @default(false)
+  qualification String
+
+  signup  Signup          @relation("TeacherSignup", fields: [user_id], references: [user_id], onDelete: Cascade)
+  reviews TeacherReview[] @relation("TeacherReview")
+
+  request TeacherRequest[] @relation("TeacherRequest")
+}
+
+model TeacherReview {
+  review_id   String   @id @default(uuid())
+  teacher_id  String
+  student_id  String
+  rating      Int
+  review_text String
+  createdAt   DateTime @default(now())
+
+  teacher Teacher @relation("TeacherReview", fields: [teacher_id], references: [teacher_id], onDelete: Cascade)
+  student Student @relation("StudentReview", fields: [student_id], references: [student_id], onDelete: Cascade)
+}
+
+model TeacherRequest {
+  request_id   String   @id @default(uuid())
+  teacher_id   String   @unique
+  student_id   String   @unique
+  isAccepted   Boolean  @default(false)
+  message      String
+  request_date DateTime @default(now())
+
+  teacher Teacher @relation("TeacherRequest", fields: [teacher_id], references: [teacher_id], onDelete: Cascade)
+  student Student @relation("TeacherRequest", fields: [student_id], references: [student_id], onDelete: Cascade)
+
+  @@unique([teacher_id, student_id, isAccepted])
+}

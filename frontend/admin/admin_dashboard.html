@@ -214,7 +214,7 @@
   </div>
 <script src="../utility/fun.js"></script>
   <script>
-    token = getCookie("authToken");
+    token = getCookie("auth_token");
 
     function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
@@ -231,26 +231,23 @@
     }
 
     async function fetchDashboardData() {
-      // Replace with API data
+  try {
+    const response = await fetch(`${urlport}/api/admin/get-total-count-lists`, {
+      method: "GET"
+    });
 
-      const response = fetch(`${urlport}/api/admin/`,{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({token})
-      })
+    if (!response.ok) {
+      console.error("HTTP error:", response.status, response.statusText);
+      return;
+    }
 
-      data = await response.json();
-      if (!data.success) {
-        console.error("Failed to fetch dashboard data:", data.error);
-        return;
-      }
-      console.log(data);
-      
+    const data = await response.json();
+    
+ 
 
-      const totalUsers = 120;
-      const approvedTeachers = 35;
+    console.log(data);
+      const totalUsers = data.students;
+      const approvedTeachers = data.teachers;
       const reviews = [
         { id: 1, name: "John Doe", text: "Great teaching experience!" },
         { id: 2, name: "Jane Smith", text: "Helpful and clear lessons." },
@@ -258,8 +255,38 @@
 
       document.getElementById("total-users").textContent = totalUsers;
       document.getElementById("total-teachers").textContent = approvedTeachers;
-      document.getElementById("total-reviews").textContent = reviews.length;
+      document.getElementById("total-reviews").textContent = data.reviews?data.reviews:"0";
 
+     
+    } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+  }
+    }
+
+    async function fetchReviews(){
+      console.log(token);
+      
+      const response = await fetch(`${urlport}/api/admin/reviews-list`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: token,
+        }),
+      });
+
+      console.log(response);
+      
+      
+      if (!response.ok) {
+        console.error("HTTP error:", response.status, response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      reviews = data.reviews
+      console.log(data);
       const reviewsList = document.getElementById("reviews-list");
       reviewsList.innerHTML = "";
 
@@ -276,6 +303,8 @@
         `;
         reviewsList.appendChild(reviewItem);
       });
+
+      
     }
 
     function deleteReview(item) {
@@ -297,7 +326,10 @@
       }
     }
 
-    window.onload = fetchDashboardData;
+    window.addEventListener("load", () => {
+  fetchDashboardData();
+  fetchReviews();
+});
   </script>
 </body>
 </html>
