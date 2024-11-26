@@ -14,6 +14,7 @@
       background-color: #f8f9fa;
     }
 
+    /* Sidebar Styling */
     .sidebar {
       width: 250px;
       background-color: #343a40;
@@ -25,6 +26,10 @@
       overflow-y: auto;
       transition: transform 0.3s ease-in-out;
       z-index: 1050;
+    }
+
+    .sidebar.active {
+      left: 0;
     }
 
     .sidebar ul {
@@ -47,6 +52,40 @@
       background-color: #495057;
       border-radius: 5px;
       padding-left: 15px;
+    }
+
+    .close-btn {
+      text-align: right;
+      padding: 10px;
+      cursor: pointer;
+      background: #495057;
+      color: white;
+      border: none;
+      width: 100%;
+    }
+
+    .close-btn:hover {
+      background: #6c757d;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1049;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    .close-btn {
+      display: none;
     }
 
     .content-container {
@@ -95,7 +134,7 @@
     }
 
     @media (max-width: 768px) {
-      .content-container {
+        .content-container {
         margin-left: 0;
       }
 
@@ -103,22 +142,36 @@
         width: 200px;
         left: -200px;
       }
+    .close-btn {
+      display: block;
+    }
     }
   </style>
 </head>
 <body>
+ <!-- Black Overlay -->
+ <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+ <!-- Sidebar -->
+ <div class="sidebar" id="sidebar">
+   <button class="close-btn" onclick="closeSidebar()">Close &times;</button>
+   <ul>
+     <li><a href="./admin_dashboard.html">Dashboard</a></li>
+     <li><a href="./admin_request.html">Requests</a></li>
+     <li><a href="./admin_manage_user.html">Users</a></li>
+   </ul>
+ </div>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <ul>
-      <li><a href="./admin_dashboard.html">Dashboard</a></li>
-      <li><a href="./admin_request.html">Requests</a></li>
-      <li><a href="./admin_manage_user.html">Users</a></li>
-    </ul>
-  </div>
-
-  <!-- Main Content -->
-  <div class="content-container">
+ <!-- Main Content -->
+ <div class="content-container">
+   <!-- Navbar -->
+   <nav class="navbar navbar-light bg-light d-lg-none">
+     <div class="container-fluid">
+       <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+         <span class="navbar-toggler-icon"></span>
+       </button>
+       
+     </div>
+   </nav>
     <div class="container mt-4">
       <h1 class="text-center mb-4">Teacher Approval Requests</h1>
 
@@ -129,6 +182,7 @@
       </div>
     </div>
   </div>
+<script src="../utility/fun.js"></script>
 <script src="../utility/fun.js"></script>
   <script>
     const token = getCookie('auth_token');
@@ -152,6 +206,7 @@
       requests.forEach((request) => {
         const requestCard = document.createElement("div");
         requestCard.classList.add("request-card");
+        requestCard.dataset.id = request.teacherId
         requestCard.innerHTML = `
           <h5>Teacher Details</h5>
           <p><strong>Name:</strong> ${request.name}</p>
@@ -175,19 +230,8 @@
       });
     }
 
-   async function handleApprove(id) {
-      const response = await fetch(`${urlport}/api/admin/verify-teacher`,{
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({token,teacher_id:id }),
-        
-      });
-      if(response.ok){
-      alert(`Teacher ${id} approved.`);
-      window.location.reload();
-      }
+    function handleApprove(name) {
+      alert(`Teacher ${name} approved.`);
       // Update the status in your database here
     }
 
