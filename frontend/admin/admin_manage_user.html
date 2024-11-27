@@ -191,7 +191,7 @@
   </div>
 <script src="../utility/fun.js"></script>
   <script>
-    const token = getCookie("auth-token")
+    const token = getCookie("auth_token")
 
 function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
@@ -208,30 +208,37 @@ function toggleSidebar() {
     }
 
     
-    let teachers = [
-      { id: 1, name: "Alice Johnson" },
-      { id: 2, name: "Robert Smith" },
-      { id: 3, name: "Emily Davis" }
-    ];
+  
 
-    let students = [
-      { id: 1, name: "John Doe" },
-      { id: 2, name: "Jane Smith" },
-      { id: 3, name: "Michael Brown" }
-    ];
-
-    function fetchuser(){
+    async function fetchuser(){
       try {
-        const response = fetch('',{
+        const response = await fetch(`${urlport}/api/admin/student-list`,{
           method:'POST',
           headers:{
             "Content-Type":"application/json"
           },
           body: JSON.stringify({token})
         })
-        const data = response.json()
-        teachers = data.teachers
-        students = data.students
+        const data = await response.json()
+        
+        students = data.list
+      } catch (error) {
+        
+      }
+    }
+    async function fetchTeacher(){
+      try {
+        const response = await fetch(`${urlport}/api/admin/teacher-list`,{
+          method:'POST',
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body: JSON.stringify({token})
+        })
+        const data = await response.json()
+        console.log(data);
+
+        teachers = data.list
       } catch (error) {
         
       }
@@ -255,35 +262,65 @@ function toggleSidebar() {
     }
 
     function loadUserList(users, userType) {
+     
+      
       const userList = document.getElementById("user-list");
       userList.innerHTML = "";
 
       users.forEach(user => {
+        const id = userType === "student" ? user.student_id : user.teacher_id;
+
         const userItem = document.createElement("div");
         userItem.classList.add("d-flex", "justify-content-between", "align-items-center", "mb-3");
         userItem.innerHTML = `
           <span>${user.name}</span>
-          <button class="delete-btn" onclick="deleteUser(${user.id}, '${userType}')">Delete</button>
+          <button class="delete-btn" onclick="deleteUser('${id}', '${userType}')">Delete</button>
         `;
         userList.appendChild(userItem);
       });
     }
 
-    function deleteUser(userId, userType) {
+    async function deleteUser(userId, userType) {
+      console.log(userId);
+      
       if (confirm("Are you sure you want to delete this user?")) {
         if (userType === "teacher") {
-          teachers = teachers.filter(user => user.id !== userId);
-          showTeachers();
+          const response = await fetch(`${urlport}/api/admin/teacher`,{
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              token,
+            teacher_id: userId
+            })
+          })
+          window.location.reload();
         } else if (userType === "student") {
-          students = students.filter(user => user.id !== userId);
-          showStudents();
+          const response = await fetch(`${urlport}/api/admin/student`,{
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              token,
+            student_id: userId
+            })
+          })
+          window.location.reload();
+
         }
         console.log(`User with ID ${userId} deleted!`);
       }
     }
 
     // Load initial data
-    window.onload = showTeachers;
+
+    window.addEventListener("load",async () => {
+      await fetchuser();
+      await fetchTeacher();
+      await showTeachers();
+});
   </script>
 </body>
 </html>

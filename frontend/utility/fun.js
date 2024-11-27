@@ -14,4 +14,4 @@ function deleteCookie(cookieName) {
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   }
 
-const urlport = "http://localhost:8090";
+const urlport = "http://192.168.0.19:8090";
