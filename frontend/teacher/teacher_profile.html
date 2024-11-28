@@ -107,29 +107,38 @@
     </div>
   </div>
 </div>
-
+<script src="../utility/fun.js"></script>
 <script src="../sidebar.js"></script>
 <script>
   // Initialize the sidebar
   createSidebar('sidebar-container',"teacher");
+  token = getCookie("auth_token")
 
   // Fetch the personal details and reviews data from backend
   function fetchUserData() {
     // Example API endpoint for fetching user data (personal details and reviews)
-    fetch('/api/user/profile')
+    fetch(`${urlport}/api/teacher/info`,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({token})
+    })
       .then(response => response.json())
       .then(data => {
+        console.log(data);
+        dataSpread = data.teacher
         // Update Personal Details
-        document.getElementById('name').textContent = data.name;
-        document.getElementById('email').textContent = data.email;
-        document.getElementById('gender').textContent = data.gender;
-        document.getElementById('age').textContent = data.age;
-        document.getElementById('qualification').textContent = data.qualification;
-        document.getElementById('experience').textContent = data.experience;
-        document.getElementById('subjects').textContent = data.subjects;
-        document.getElementById('contact').textContent = data.contact;
-        document.getElementById('state').textContent = data.state;
-        document.getElementById('username').textContent = data.username;
+        document.getElementById('name').textContent = dataSpread.name;
+        document.getElementById('email').textContent = dataSpread.signup.email;
+        document.getElementById('gender').textContent = dataSpread.gender;
+        document.getElementById('age').textContent = dataSpread.age;
+        document.getElementById('qualification').textContent = dataSpread.qualification;
+        document.getElementById('experience').textContent = dataSpread.experience;
+        document.getElementById('subjects').textContent = dataSpread.subjects;
+        document.getElementById('contact').textContent = dataSpread.phone_no;
+        document.getElementById('state').textContent = dataSpread.state;
+        document.getElementById('username').textContent = dataSpread.username;
 
         // Update Reviews Section
         const reviewsList = document.getElementById('reviews-list');

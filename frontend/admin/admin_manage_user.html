@@ -268,13 +268,13 @@ function toggleSidebar() {
       userList.innerHTML = "";
 
       users.forEach(user => {
-        const id = userType === "student" ? user.student_id : user.teacher_id;
+        // const id = userType === "student" ? user.student_id : user.teacher_id;
 
         const userItem = document.createElement("div");
         userItem.classList.add("d-flex", "justify-content-between", "align-items-center", "mb-3");
         userItem.innerHTML = `
           <span>${user.name}</span>
-          <button class="delete-btn" onclick="deleteUser('${id}', '${userType}')">Delete</button>
+          <button class="delete-btn" onclick="deleteUser('${user.user_id}', '${userType}')">Delete</button>
         `;
         userList.appendChild(userItem);
       });
@@ -283,34 +283,43 @@ function toggleSidebar() {
     async function deleteUser(userId, userType) {
       console.log(userId);
       
-      if (confirm("Are you sure you want to delete this user?")) {
-        if (userType === "teacher") {
-          const response = await fetch(`${urlport}/api/admin/teacher`,{
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              token,
-            teacher_id: userId
+      try {
+        if (confirm("Are you sure you want to delete this user?")) {
+          if (userType === "teacher") {
+            const response = await fetch(`${urlport}/api/admin/teacher`,{
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                token,
+              user_id: userId
+              })
             })
-          })
-          window.location.reload();
-        } else if (userType === "student") {
-          const response = await fetch(`${urlport}/api/admin/student`,{
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              token,
-            student_id: userId
-            })
-          })
-          window.location.reload();
+            console.log(await response.json());
 
+            // window.location.reload();
+          } else if (userType === "student") {
+            const response = await fetch(`${urlport}/api/admin/student`,{
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                token,
+              user_id: userId
+              })
+            })
+            console.log(await response.json());
+            
+            // window.location.reload();
+  
+          }
+          console.log(`User with ID ${userId} deleted!`);
         }
-        console.log(`User with ID ${userId} deleted!`);
+      } catch (error) {
+        console.log("Error  while deleting : ", error);
+        
       }
     }
 

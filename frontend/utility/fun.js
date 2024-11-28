@@ -15,3 +15,7 @@ function deleteCookie(cookieName) {
   }
 
 const urlport = "http://192.168.0.19:8090";
+
+function back(location) {
+    window.location.href = `${location}`;
+  }
