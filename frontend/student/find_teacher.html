@@ -160,10 +160,12 @@
       }
       });
       teachers = await response.json();
-      filteredTeachers = teachers;
+      console.log(teachers);
+      
+       filteredTeachers = teachers.list;
       console.log(filteredTeachers);
       
-      displayTeachers();
+       displayTeachers();
     } catch (error) {
       console.error("Error fetching teachers:", error);
     }
@@ -183,9 +185,10 @@
       const card = document.createElement("div");
       card.className = "teacher-card";
       card.dataset.id = teacher.id;
+      const location = `${teacher.village},${teacher.state},${teacher.pin}` 
       card.innerHTML = `
         <h5>${teacher.name}</h5>
-        <p><strong>Location:</strong> ${teacher.location}</p>
+        <p><strong>Location:</strong> ${location}</p>
         <p><strong>Subjects:</strong> ${teacher.subjects.join(", ")}</p>
         <p><strong>Experience:</strong> ${teacher.experience}</p>
         <p><strong>Qualification:</strong> ${teacher.qualification}</p>
@@ -201,11 +204,11 @@
     const searchType = document.getElementById("search-type").value;
     const query = document.getElementById("search-bar").value.toLowerCase();
 
-    filteredTeachers = teachers.filter(teacher => {
+    filteredTeachers = teachers.list.filter(teacher => {
       if (searchType === "name") {
         return teacher.name.toLowerCase().includes(query);
       } else if (searchType === "location") {
-        return teacher.location.toLowerCase().includes(query);
+        return teacher.state.toLowerCase().includes(query);
       } else if (searchType === "subject") {
         return teacher.subjects.some(subject => subject.toLowerCase().includes(query));
       }
@@ -217,6 +220,7 @@
   // Open request modal
   function openRequestModal(teacherIndex) {
     const overlay2 = document.getElementById("overlay2");
+    const teacher = filteredTeachers[teacherIndex];
     const modal = document.getElementById("request-modal");
     const sendRequestBtn = document.getElementById("send-request-btn");
 
