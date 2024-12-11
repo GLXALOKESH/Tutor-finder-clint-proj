@@ -298,7 +298,7 @@ function toggleSidebar() {
             })
             console.log(await response.json());
 
-            // window.location.reload();
+            window.location.reload();
           } else if (userType === "student") {
             const response = await fetch(`${urlport}/api/admin/student`,{
               method: "DELETE",
@@ -312,7 +312,7 @@ function toggleSidebar() {
             })
             console.log(await response.json());
             
-            // window.location.reload();
+            window.location.reload();
   
           }
           console.log(`User with ID ${userId} deleted!`);

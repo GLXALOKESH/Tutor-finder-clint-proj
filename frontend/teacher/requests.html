@@ -64,37 +64,44 @@
   <!-- Request Cards -->
   <div id="requests-list">
     <!-- Example Request -->
-    <div class="request-card">
-      <h5>John Doe</h5>
-      <p class="note">Note: I need help with advanced calculus assignments.</p>
-      <div class="request-actions">
-        <button class="btn btn-primary" onclick="viewProfile(1)">View Profile</button>
-        <button class="btn btn-success" onclick="acceptRequest(1)">Accept</button>
-      </div>
-    </div>
     
-    <div class="request-card">
-      <h5>Jane Smith</h5>
-      <p class="note">Note: I am struggling with English grammar basics.</p>
-      <div class="request-actions">
-        <button class="btn btn-primary" onclick="viewProfile(2)">View Profile</button>
-        <button class="btn btn-success" onclick="acceptRequest(2)">Accept</button>
-      </div>
-    </div>
     <!-- More requests will load dynamically -->
   </div>
 </div>
 <script src="../utility/fun.js"></script>
 <script src="../sidebar.js"></script>
-<script>
+<script defer>
   // Initialize the sidebar
   createSidebar('sidebar-container', "teacher");
+  
+  const token = getCookie("auth_token")
 
   // Fetch requests dynamically (simulate with static data for now)
-  const requests = [
-    { id: 1, name: 'John Doe', note: 'I need help with advanced calculus assignments.' },
-    { id: 2, name: 'Jane Smith', note: 'I am struggling with English grammar basics.' },
+  let requests = [
+
   ];
+
+  async function fetchRequests(){
+   try {
+    const response = await fetch(`${urlport}/api/teacher/pending-requests`,{
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+       },
+       body: JSON.stringify({
+         token: token,
+       }),
+ 
+     })
+     data = await response.json()
+     requests = data.list
+     console.log(requests);
+     loadRequests()
+   } catch (error) {
+    console.log("error while fetching requests", error);
+    
+   }
+  }
 
   function loadRequests() {
     const requestsList = document.getElementById('requests-list');
@@ -104,30 +111,69 @@
       const requestCard = document.createElement('div');
       requestCard.classList.add('request-card');
       requestCard.innerHTML = `
-        <h5>${request.name}</h5>
-        <p class="note">Note: ${request.note}</p>
+        <h5>${request.student.name}</h5>
+        <p class="note">Note: ${request.message}</p>
         <div class="request-actions">
-          <button class="btn btn-primary" onclick="viewProfile(${request.id})">View Profile</button>
-          <button class="btn btn-success" onclick="acceptRequest(${request.id})">Accept</button>
+          <button class="btn btn-primary" onclick="viewProfile('${request.student_id}','${request.request_id}')">View Profile</button>
+          <button class="btn btn-success" onclick="acceptRequest('${request.request_id}')">Accept</button>
+          <button class="btn btn-danger" onclick="rejectRequest('${request.request_id}')">Reject</button>
         </div>
       `;
       requestsList.appendChild(requestCard);
     });
   }
 
-  function viewProfile(studentId) {
+  function viewProfile(studentId,req) {
     alert(`Redirecting to profile page for student ID: ${studentId}`);
     // Replace with actual profile page URL
-    window.location.href = `./profile.html?studentId=${studentId}`;
+    window.location.href = `./req_view_profile.html?studentId=${studentId}&requestId=${req}`;
   }
 
-  function acceptRequest(studentId) {
-    alert(`Request accepted for student ID: ${studentId}`);
+  async function acceptRequest(request_id) {
     // Implement API call to accept the request
+    try {
+      const response = await fetch(`${urlport}/api/teacher/handel-request`,{
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+          token, request_id
+         }),
+   
+       })
+
+       alert("request accepted")
+       window.location.refresh()
+    } catch (error) {
+      console.log("Error during accept",error);
+      
+    }
+  }
+  async function rejectRequest( request_id) {
+    // Implement API call to accept the request
+    try {
+      const response = await fetch(`${urlport}/api/teacher/handel-request`,{
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+          token, request_id, isRejected: true
+         }),
+   
+       })
+       window.location.refresh()
+    } catch (error) {
+      console.log("Error while rejecting", error);
+      
+    }
   }
 
   // Load requests on page load
-  window.onload = loadRequests;
+  window.addEventListener("load", () => {
+   fetchRequests()
+});
 </script>
 </body>
 </html>

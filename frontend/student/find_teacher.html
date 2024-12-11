@@ -144,8 +144,7 @@
   }
   // Backend API URL
   createSidebar('sidebar-container',"student");
-
-  const apiUrl = `${urlport}/teachers`;
+ const token = getCookie("auth_token")
 
   let teachers = []; // Store teacher data fetched from the backend
   let filteredTeachers = []; // Store filtered data
@@ -184,16 +183,16 @@
     filteredTeachers.forEach((teacher, index) => {
       const card = document.createElement("div");
       card.className = "teacher-card";
-      card.dataset.id = teacher.id;
+      card.dataset.id = teacher.teacher_id;
       const location = `${teacher.village},${teacher.state},${teacher.pin}` 
       card.innerHTML = `
-        <h5>${teacher.name}</h5>
+        <h5>${teacher.name}</h5>  
         <p><strong>Location:</strong> ${location}</p>
         <p><strong>Subjects:</strong> ${teacher.subjects.join(", ")}</p>
         <p><strong>Experience:</strong> ${teacher.experience}</p>
         <p><strong>Qualification:</strong> ${teacher.qualification}</p>
         <button class="btn btn-secondary" onclick="viewProfile(this)">View Profile</button>
-        <button class="btn btn-primary" onclick="openRequestModal(1)">Send Request</button>
+        <button class="btn btn-primary" onclick="openRequestModal(${index})">Send Request</button>
       `;
       teacherList.appendChild(card);
     });
@@ -232,19 +231,24 @@
       const teacher = filteredTeachers[teacherIndex];
 
       try {
-        const response = await fetch(`${apiUrl}/${teacher.id}/request`, {
+        const response = await fetch(`${urlport}/api/user/request-teacher`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ note })
+          body: JSON.stringify({ token, teacher_id : teacher.teacher_id , message:note})
         });
 
         if (response.ok) {
           alert(`Request sent to ${teacher.name}`);
         } else {
           alert("Failed to send request");
+
         }
       } catch (error) {
+        data = response.json()
+        console.log(data);
+        
         console.error("Error sending request:", error);
+        
       }
 
       closeRequestModal();

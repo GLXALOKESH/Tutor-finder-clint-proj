@@ -86,29 +86,40 @@
 <script>
   // Initialize the sidebar
   createSidebar('sidebar-container', "teacher");
-
+  const token = getCookie("auth_token")
   // Fetch the students' data from backend
+  let students =[]
   function fetchStudentsData() {
     // Example API endpoint for fetching students
-    fetch('/api/teacher/students')
+    fetch(`${urlport}/api/teacher/get-accetped-students`,{
+      method: 'POST',
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token: token
+      })
+    })
       .then(response => response.json())
       .then(data => {
+        console.log(data);
+        
         const studentsList = document.getElementById('students-list');
         studentsList.innerHTML = ''; // Clear existing content
 
-        data.students.forEach(student => {
+        data.list.forEach(student => {
           const studentCard = document.createElement('div');
           studentCard.classList.add('student-card');
-          studentCard.dataset.studentId = student.id;
+          studentCard.dataset.studentId = student.student_id;
           studentCard.innerHTML = `
             <div class="student-details">
-              <p><strong>Name:</strong> ${student.name}</p>
-              <p><strong>Email:</strong> ${student.email}</p>
-              <p><strong>Phone:</strong> ${student.phone}</p>
+              <p><strong>Name:</strong> ${student.student.name}</p>
+              <p><strong>Email:</strong> ${student.student.signup.email}</p>
+              <p><strong>Phone:</strong> ${student.student.phone_no}</p>
             </div>
             <div class="student-actions">
-              <button class="btn btn-primary btn-view-profile" onclick="viewProfile('${student.id}')">View Profile</button>
-              <button class="btn btn-success btn-chat" onclick="chatWithStudent('${student.id}')">Chat</button>
+              <button class="btn btn-primary btn-view-profile" onclick="viewProfile('${student.student_id}')">View Profile</button>
+              <button class="btn btn-success btn-chat" onclick="chatWithStudent('${student.student_id}')">Chat</button>
             </div>
           `;
           studentsList.appendChild(studentCard);
@@ -132,7 +143,7 @@
   }
 
   // Call the function to fetch students' data on page load
-  window.onload = fetchStudentsData;
+  window.onload = fetchStudentsData();
 </script>
 </body>
 </html>

@@ -38,6 +38,7 @@
       justify-content: center;
       font-size: 36px;
       color: white;
+      text-transform: uppercase;
     }
 
     .btn-group-container {
@@ -105,6 +106,7 @@
   <script src="../sidebar.js"></script>
   <script>
     createSidebar('sidebar-container', "teacher");
+    const token = getCookie("auth_token")
 
     function back() {
       window.location.href = "./requests.html";
@@ -119,18 +121,22 @@
 
     const params = getUrlParams();
     const studentId = params.studentId;
+    const requestId = params.requestId;
     console.log(studentId);
+    console.log(requestId);
+    
 
     async function fetchStudentProfile() {
       try {
-        const response = await fetch(`${apiUrl}/${studentId}`);
+        const response = await fetch(`${urlport}/api/user/student-${studentId}`);
         const student = await response.json();
-
-        document.getElementById('placeholder-icon').textContent = student.name[0] || "S";
-        document.getElementById('student-name').textContent = student.name || "N/A";
-        document.getElementById('student-location').textContent = `Location: ${student.location || "N/A"}`;
-        document.getElementById('student-age').textContent = student.age || "N/A";
-        document.getElementById('student-gender').textContent = student.gender || "N/A";
+console.log(student);
+        const location = `${student.user.village},${student.user.district},${student.user.state},pin-${student.user.pin}`
+        document.getElementById('placeholder-icon').textContent = student.user.name[0] || "S";
+        document.getElementById('student-name').textContent = student.user.name || "N/A";
+        document.getElementById('student-location').textContent = `Location: ${location || "N/A"}`;
+        document.getElementById('student-age').textContent = student.user.age || "N/A";
+        document.getElementById('student-gender').textContent = student.user.gender || "N/A";
       } catch (error) {
         console.error("Error fetching student profile:", error);
       }
@@ -138,36 +144,44 @@
 
     async function acceptRequest() {
       try {
-        const response = await fetch(`${apiUrl}/${studentId}/accept`, {
-          method: "POST"
-        });
+      const response = await fetch(`${urlport}/api/teacher/handel-request`,{
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+          token, request_id:requestId
+         }),
+   
+       })
 
-        if (response.ok) {
-          alert("Request accepted successfully.");
-          window.location.href = "./requests.html"; // Redirect after action
-        } else {
-          alert("Failed to accept the request.");
-        }
-      } catch (error) {
-        console.error("Error accepting request:", error);
-      }
+       alert("request accepted")
+       window.location.href = `requests.html`
+
+    } catch (error) {
+      console.log("Error during accept",error);
+      
+    }
     }
 
     async function rejectRequest() {
       try {
-        const response = await fetch(`${apiUrl}/${studentId}/reject`, {
-          method: "POST"
-        });
-
-        if (response.ok) {
-          alert("Request rejected successfully.");
-          window.location.href = "./requests.html"; // Redirect after action
-        } else {
-          alert("Failed to reject the request.");
-        }
-      } catch (error) {
-        console.error("Error rejecting request:", error);
-      }
+      const response = await fetch(`${urlport}/api/teacher/handel-request`,{
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+          token, request_id:requestId, isRejected: true
+         }),
+   
+       })
+          window.location.href = `requests.html`
+    } catch (error) {
+      console.log("Error while rejecting", error);
+      
+    }
+ 
     }
 
     window.onload = () => {

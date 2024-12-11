@@ -14,7 +14,7 @@ function deleteCookie(cookieName) {
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   }
 
-const urlport = "http://192.168.0.25:8090";
+const urlport = "https://njw1585d-8090.inc1.devtunnels.ms";
 
 function back(location) {
     window.location.href = `${location}`;
