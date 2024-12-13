@@ -201,7 +201,7 @@
     <button class="btn btn-secondary mb-3" onclick="back()"><--</button>
 
     <!-- Teacher Profile -->
-    <div class="profile-container" data-id="">
+    <div class="profile-container" id="profile-container" data-id="">
       <div class="profile-header">
         <!-- Placeholder icon instead of image -->
         <div class="placeholder-icon" id="placeholder-icon">T</div>
@@ -289,7 +289,7 @@
     const params = getUrlParams();
     const teacherId = params.teacherId;
     console.log(teacherId);
-    document.getElementById('.profile-container').dataset.id = teacherId;
+    document.getElementById('profile-container').dataset.id = teacherId;
     function sendToChat(item){
 const id = item.closest("[data-id]").dataset.id
      window.location.href = `./student_chat.html?teacherId=${id}`
@@ -297,12 +297,21 @@ const id = item.closest("[data-id]").dataset.id
 
     async function fetchTeacherProfile() {
       try {
-        const response = await fetch(`${apiUrl}/${teacherId}`);
-        const teacher = await response.json();
+        const response = await fetch(`${urlport}/api/user/teacher/${teacherId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          
+        });
+        const res = await response.json();
+        const teacher = res.data;
+console.log(teacher);
+const location = `${teacher.village},${teacher.district},${teacher.state},pin-${teacher.pin}`
 
         document.getElementById('placeholder-icon').textContent = teacher.name[0];
         document.getElementById('teacher-name').textContent = teacher.name || "N/A";
-        document.getElementById('teacher-location').textContent = `Location: ${teacher.location || "N/A"}`;
+        document.getElementById('teacher-location').textContent = `Location: ${location || "N/A"}`; 
         document.getElementById('teacher-subjects').textContent = teacher.subjects.join(", ") || "N/A";
         document.getElementById('teacher-experience').textContent = `${teacher.experience} years` || "N/A";
         document.getElementById('teacher-qualification').textContent = teacher.qualification || "N/A";

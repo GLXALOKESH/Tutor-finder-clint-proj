@@ -137,15 +137,27 @@
   // Backend API URL
   createSidebar('sidebar-container',"student");
 
-  const apiUrl = `${urlport}/teachers`;
+  const token = getCookie("auth_token")
+console.log(token);
 
   let teachers = []; // Store teacher data fetched from the backend
 
   // Fetch teachers from backend
   async function fetchTeachers() {
     try {
-      const response = await fetch(apiUrl);
-      teachers = await response.json();
+      const response = await fetch(`${urlport}/api/user/get-your-teacher`,{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: token,
+        }),
+      });
+      const temp = await response.json();
+      teachers = temp.data
+      console.log(teachers);
+      
       displayTeachers();
     } catch (error) {
       console.error("Error fetching teachers:", error);
@@ -163,15 +175,18 @@
     const teacherList = document.getElementById("teacher-list");
     teacherList.innerHTML = "";
     teachers.forEach((teacher, _) => {
+      console.log(teacher);
+      
+      const location = `${teacher.teacher.village},${teacher.teacher.district},${teacher.teacher.state},pin-${teacher.teacher.pin}`
       const card = document.createElement("div");
-      card.dataset.id = teacher.id;
+      card.dataset.id = teacher.teacher_id;
       card.className = "teacher-card";
       card.innerHTML = `
-        <h5>${teacher.name}</h5>
-        <p><strong>Location:</strong> ${teacher.location}</p>
-        <p><strong>Subjects:</strong> ${teacher.subjects.join(", ")}</p>
-        <p><strong>Experience:</strong> ${teacher.experience}</p>
-        <p><strong>Qualification:</strong> ${teacher.qualification}</p>
+        <h5>${teacher.teacher.name}</h5>
+        <p><strong>Location:</strong> ${location}</p>
+        <p><strong>Subjects:</strong> ${teacher.teacher.subjects.join(", ")}</p>
+        <p><strong>Experience:</strong> ${teacher.teacher.experience}</p>
+        <p><strong>Qualification:</strong> ${teacher.teacher.qualification}</p>
         <button class="btn btn-secondary" onclick="viewProfile(this)">View Profile</button>
      
       `;
