@@ -162,7 +162,7 @@
 <script>
 const token =getCookie("auth_token");
   // Initialize the sidebar
-  createSidebar('sidebar-container', "student");
+  createSidebar('sidebar-container', "student",false);
 
   // Handle Profile Update Form Submission
   document.getElementById('editProfileForm').addEventListener('submit', async function (e) {

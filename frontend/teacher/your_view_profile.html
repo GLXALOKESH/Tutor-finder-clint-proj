@@ -38,6 +38,7 @@
       justify-content: center;
       font-size: 36px;
       color: white;
+      text-transform: capitalize;
     }
 
     .btn-group-container {
@@ -91,16 +92,15 @@
       <div class="profile-details">
         <p><strong>Age:</strong> <span id="student-age">N/A</span></p>
         <p><strong>Gender:</strong> <span id="student-gender">N/A</span></p>
-        <p><strong>Contact:</strong> <span id="student-gender">N/A</span></p>
-        <p><strong>Email:</strong> <span id="student-gender">N/A</span></p>
+        <p><strong>Contact:</strong> <span id="student-contact">N/A</span></p>
+        <p><strong>Email:</strong> <span id="student-email">N/A</span></p>
 
 
       </div>
 
       <!-- Accept and Reject Buttons -->
       <div class="btn-group-container">
-        <button class="btn btn-success" onclick="acceptRequest()">Chat</button>
-        <button class="btn btn-danger" onclick="rejectRequest()">Delete</button>
+        <button class="btn btn-success" onclick="sendToChat()">Chat</button>
       </div>
     </div>
   </div>
@@ -108,7 +108,7 @@
   <script src="../utility/fun.js"></script>
   <script src="../sidebar.js"></script>
   <script>
-    createSidebar('sidebar-container', "teacher");
+    createSidebar('sidebar-container', "teacher",false);
 
     function back() {
       window.location.href = "./requests.html";
@@ -123,55 +123,31 @@
 
     const params = getUrlParams();
     const studentId = params.studentId;
+    const requestId = params.requestId;
     console.log(studentId);
+    console.log(requestId);
 
     async function fetchStudentProfile() {
       try {
-        const response = await fetch(`${apiUrl}/${studentId}`);
-        const student = await response.json();
-
+        const response = await fetch(`${urlport}/api/user/student/${studentId}`);
+        const res = await response.json();
+        // console.log(res.data);
+        const student = res.data;
         document.getElementById('placeholder-icon').textContent = student.name[0] || "S";
         document.getElementById('student-name').textContent = student.name || "N/A";
-        document.getElementById('student-location').textContent = `Location: ${student.location || "N/A"}`;
+        document.getElementById('student-location').textContent = `Location: ${student.district || "N/A"}`;
         document.getElementById('student-age').textContent = student.age || "N/A";
         document.getElementById('student-gender').textContent = student.gender || "N/A";
+        document.getElementById('student-contact').textContent = student.phone_no || "N/A";
+        document.getElementById('student-email').textContent = student.signup.email || "N/A";
       } catch (error) {
         console.error("Error fetching student profile:", error);
       }
     }
 
-    async function acceptRequest() {
-      try {
-        const response = await fetch(`${apiUrl}/${studentId}/accept`, {
-          method: "POST"
-        });
-
-        if (response.ok) {
-          alert("Request accepted successfully.");
-          window.location.href = "./requests.html"; // Redirect after action
-        } else {
-          alert("Failed to accept the request.");
-        }
-      } catch (error) {
-        console.error("Error accepting request:", error);
-      }
-    }
-
-    async function rejectRequest() {
-      try {
-        const response = await fetch(`${apiUrl}/${studentId}/reject`, {
-          method: "POST"
-        });
-
-        if (response.ok) {
-          alert("Request rejected successfully.");
-          window.location.href = "./requests.html"; // Redirect after action
-        } else {
-          alert("Failed to reject the request.");
-        }
-      } catch (error) {
-        console.error("Error rejecting request:", error);
-      }
+    function sendToChat(){
+      const url = `./teacher_chat.html?studentId=${studentId}`;
+      window.location.href = url;
     }
 
     window.onload = () => {

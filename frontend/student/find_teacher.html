@@ -116,15 +116,6 @@
 
   <!-- Teacher List -->
   <div id="teacher-list">
-    <div class="teacher-card" data-id="10">
-      <h5>${teacher.name}</h5>
-        <p><strong>Location:</strong> ${teacher.location}</p>
-        <p><strong>Subjects:</strong> ${teacher.subjects.join(", ")}</p>
-        <p><strong>Experience:</strong> ${teacher.experience}</p>
-        <p><strong>Qualification:</strong> ${teacher.qualification}</p>
-        <button class="btn btn-secondary" onclick="viewProfile(this)">View Profile</button>
-        <button class="btn btn-primary" onclick="openRequestModal(1)">Send Request</button>
-    </div>
   </div>  
 </div>
 
@@ -143,7 +134,7 @@
     window.location.href = "./student_find.html";
   }
   // Backend API URL
-  createSidebar('sidebar-container',"student");
+  createSidebar('sidebar-container',"student",false);
  const token = getCookie("auth_token")
 
   let teachers = []; // Store teacher data fetched from the backend
@@ -152,11 +143,12 @@
   // Fetch teachers from backend
   async function fetchTeachers() {
     try {
-      const response = await fetch(`${urlport}/api/teacher/list`,{
+      const response = await fetch(`${urlport}/api/teacher/get-teacher-list`,{
         method:'POST',
         headers:{
         'Content-Type': 'application/json'
-      }
+      },
+      body:json.stringify({token:token}),
       });
       teachers = await response.json();
       console.log(teachers);

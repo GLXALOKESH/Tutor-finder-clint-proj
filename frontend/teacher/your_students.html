@@ -85,7 +85,7 @@
 <script src="../sidebar.js"></script>
 <script>
   // Initialize the sidebar
-  createSidebar('sidebar-container', "teacher");
+  createSidebar('sidebar-container', "teacher",false);
   const token = getCookie("auth_token")
   // Fetch the students' data from backend
   let students =[]
@@ -133,7 +133,9 @@
   // View profile of a student
   function viewProfile(studentId) {
     // Redirect to student profile page or fetch profile details
-    window.location.href = `your_view_profile.html?student_id=${studentId}`;
+    // console.log(studentId);
+    
+    window.location.href = `your_view_profile.html?studentId=${studentId}`;
   }
 
   // Chat with a student

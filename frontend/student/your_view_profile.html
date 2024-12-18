@@ -44,6 +44,7 @@
       justify-content: center;
       font-size: 36px;
       color: white;
+      text-transform: uppercase;
     }
 
     .reviews-section {
@@ -178,7 +179,20 @@
 .request-modal .me-2 {
     margin-right: 8px;
 }
+.review-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
 
+    .review-item:last-child {
+      border-bottom: none;
+    }
+#reviews-list{
+ overflow-y: scroll; 
+}
   </style>
 </head>
 <body>
@@ -201,14 +215,13 @@
     <button class="btn btn-secondary mb-3" onclick="back()"><--</button>
 
     <!-- Teacher Profile -->
-    <div class="profile-container" data-id="">
+    <div class="profile-container" id="profile-container" data-id="">
       <div class="profile-header">
         <!-- Placeholder icon instead of image -->
         <div class="placeholder-icon" id="placeholder-icon">T</div>
         <div>
           <div class="d-flex justify-content-between align-items-center">
             <h2 id="teacher-name" class="mb-0">Teacher Name</h2>
-            <button class="btn btn-danger ms-3 send-request-btn" onclick="deleteTeacher()">Delete Teacher</button>
           </div>
           <p id="teacher-location">Location</p>
           <p><strong>Subjects:</strong> <span id="teacher-subjects"></span></p>
@@ -219,7 +232,6 @@
       <div class="profile-details">
         <p><strong>Experience:</strong> <span id="teacher-experience"></span></p>
         <p><strong>Qualification:</strong> <span id="teacher-qualification"></span></p>
-        <p><strong>About:</strong> <span id="teacher-about"></span></p>
         <p><strong>Contact No:</strong> <span id="teacher-contact"></span></p>
         <p><strong>Ratings:</strong> <span id="teacher-ratings"></span></p>
 
@@ -272,7 +284,8 @@
   <script src="../utility/fun.js"></script>
 <script src="../sidebar.js"></script>
   <script>
-    createSidebar('sidebar-container',"student");
+    createSidebar('sidebar-container',"student",false);
+const token = getCookie('auth_token'); 
 
     function back() {
     window.location.href = "./your_teacher.html";
@@ -289,7 +302,7 @@
     const params = getUrlParams();
     const teacherId = params.teacherId;
     console.log(teacherId);
-    document.getElementById('.profile-container').dataset.id = teacherId;
+    document.getElementById('profile-container').dataset.id = teacherId;
     function sendToChat(item){
 const id = item.closest("[data-id]").dataset.id
      window.location.href = `./student_chat.html?teacherId=${id}`
@@ -297,16 +310,24 @@ const id = item.closest("[data-id]").dataset.id
 
     async function fetchTeacherProfile() {
       try {
-        const response = await fetch(`${apiUrl}/${teacherId}`);
-        const teacher = await response.json();
+        const response = await fetch(`${urlport}/api/user/teacher/${teacherId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          
+        });
+        const res = await response.json();
+        const teacher = res.data;
+console.log(teacher);
+const location = `${teacher.village},${teacher.district},${teacher.state},pin-${teacher.pin}`
 
         document.getElementById('placeholder-icon').textContent = teacher.name[0];
         document.getElementById('teacher-name').textContent = teacher.name || "N/A";
-        document.getElementById('teacher-location').textContent = `Location: ${teacher.location || "N/A"}`;
+        document.getElementById('teacher-location').textContent = `Location: ${location || "N/A"}`; 
         document.getElementById('teacher-subjects').textContent = teacher.subjects.join(", ") || "N/A";
         document.getElementById('teacher-experience').textContent = `${teacher.experience} years` || "N/A";
         document.getElementById('teacher-qualification').textContent = teacher.qualification || "N/A";
-        document.getElementById('teacher-about').textContent = teacher.about || "No details available.";
         document.getElementById('teacher-contact').textContent = teacher.phone_no || "No details available.";
         document.getElementById('teacher-ratings').textContent = teacher.ratings || "No details available.";
 
@@ -394,7 +415,6 @@ async function submitRating(event) {
         return;
     }
 
-    const token = localStorage.getItem("authToken"); // Assuming token is stored in local storage
 
     if (!token) {
         alert("You must be logged in to submit a review.");
@@ -402,17 +422,18 @@ async function submitRating(event) {
     }
 
     const reviewData = {
-        teacherId: teacherId, // Assuming teacherId is globally available
-        text: ratingText,
+      token:token,
+      teacher_id : teacherId, 
+        review_text: ratingText,
         rating: parseInt(starRating, 10),
+        
     };
 
     try {
-        const response = await fetch(`${reviewsApiUrl}`, {
+        const response = await fetch(`${urlport}/api/user/teacher-review`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify(reviewData),
         });
@@ -439,9 +460,20 @@ async function submitRating(event) {
 // Utility function to fetch and update teacher reviews (for refresh after submitting)
 async function fetchTeacherReviews() {
     try {
-        const response = await fetch(`${reviewsApiUrl}/teacher/${teacherId}`);
+        const response = await fetch(`${urlport}/api/admin/reviews-list`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+       
+      });
+
         if (response.ok) {
-            const reviews = await response.json();
+          
+            const data = await response.json();
+            const reviews = data.reviews;
+            console.log(reviews);
+            
             updateReviewsUI(reviews);
         } else {
             console.error("Failed to fetch reviews.");
@@ -453,15 +485,23 @@ async function fetchTeacherReviews() {
 
 // Example function to update reviews on the UI
 function updateReviewsUI(reviews) {
-    const reviewsContainer = document.getElementById("reviewsContainer");
+    const reviewsContainer = document.getElementById("reviews-list");
     if (!reviewsContainer) return;
 
-    reviewsContainer.innerHTML = reviews.map(review => `
+    // Clear existing reviews before adding new ones
+    reviewsContainer.innerHTML = ""; 
+    
+    reviews.forEach(review => {
+        const reviewItem = document.createElement("div");
+        reviewItem.classList.add("review-item");
+        reviewItem.dataset.id = review.reviewid;
+        reviewItem.innerHTML = `
         <div class="review">
-            <p><strong>${review.text}</strong></p>
-            <p>Rating: ${review.rating} Stars</p>
-        </div>
-    `).join("");
+          <div><strong>${review.student.name}</strong>: ${review.review_text}</div>
+          <div class="rating">${review.rating} <strong style="color: goldenrod;">&#9733;</strong></div>
+        </div>`;
+        reviewsContainer.appendChild(reviewItem);
+    });
 }
 
 
