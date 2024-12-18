@@ -12,15 +12,30 @@
       margin-left: 250px; /* Space for sidebar */
       padding: 20px;
       background: #f8f9fa;
-      min-height: 100vh;
+      min-height: 100vh; /* Ensures the content covers the viewport */
+      overflow-x: hidden; /* Prevents horizontal scrolling */
     }
-
+  
     @media (max-width: 768px) {
       .profile-page {
         margin-left: 0;
       }
+      #sidebar-container{
+        display: none;
+      }
     }
-
+  
+    /* Sidebar Placeholder */
+    #sidebar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh; /* Sidebar height matches the viewport */
+      width: 250px;
+      overflow-y: auto; /* Allow scrolling inside the sidebar */
+      background-color: #343a40; /* Example background for the sidebar */
+    }
+  
     .profile-section {
       background: white;
       border-radius: 8px;
@@ -28,16 +43,19 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
     }
-
+  
     .edit-btn {
       float: right;
     }
-
+  
     .reviews-section {
-      max-height: 300px;
-      overflow-y: auto;
+      max-height: 300px; /* Limit height */
+      overflow-y: auto; /* Scroll inside the reviews section */
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
     }
-
+  
     .review-item {
       background: #ffffff;
       border: 1px solid #ddd;
@@ -48,16 +66,16 @@
       justify-content: space-between;
       align-items: center;
     }
-
+  
     .review-text {
       max-width: 70%;
     }
-
+  
     .star-rating {
       color: #ffcc00;
       font-size: 1.2rem;
     }
-
+  
     .delete-review-btn {
       font-size: 0.9rem;
       color: #dc3545;
@@ -65,7 +83,13 @@
       border: none;
       cursor: pointer;
     }
+  
+    /* Prevent horizontal overflow globally */
+    body {
+      overflow-x: hidden;
+    }
   </style>
+  
 </head>
 <body>
 
@@ -110,7 +134,7 @@
 <script src="../sidebar.js"></script>
 <script>
   // Initialize the sidebar
-  createSidebar('sidebar-container',"student");
+  createSidebar('sidebar-container',"student",false);
   const token = getCookie('auth_token')
 
   // Fetch the personal details and reviews data from backend
@@ -153,11 +177,11 @@
           reviewItem.classList.add('review-item');
           reviewItem.innerHTML = `
             <div>
-              <p><strong>${review.teacherUsername}</strong></p>
-              <p class="review-text">${review.text}</p>
+              <p><strong>${review.teacher.name}</strong></p>
+              <p class="review-text">${review.review_text}</p>
               <span class="star-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
             </div>
-            <button class="delete-review-btn" onclick="deleteReview(${review.id})">Delete</button>
+            <button class="delete-review-btn" onclick="deleteReview(${review.review_id})">Delete</button>
           `;
           reviewsList.appendChild(reviewItem);
         });

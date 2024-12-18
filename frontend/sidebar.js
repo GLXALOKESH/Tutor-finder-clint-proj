@@ -1,18 +1,18 @@
 // Sidebar Component Function
-function createSidebar(containerId, userType) {
+function createSidebar(containerId, userType,isfaq) {
   let sidebarHTML = `
     <div class="sidebar" id="sidebar">
       <div class="close-btn" onclick="toggleSidebar()">×</div>
       <div class="logo">Tutor Finder</div>
       <ul>
-        <li><a href="./${userType}_profile.html">Profile</a></li>
+        <li><a href="${isfaq?`./${userType}`:"."}/${userType}_profile.html">Profile</a></li>
         <!-- Conditionally render Find Tutors or Requests based on userType -->
         ${userType === 'student' ? 
-          `<li><a href="./student_find.html">Find Tutors</a></li>` : 
-          `<li><a href="./teacher_students.html">Students</a></li>`}
-        <li><a href="./${userType}_chat.html">Chat</a></li>
-        <li><a href="./${userType}_settings.html">Settings</a></li>
-        <li><a href="../faq.html">FAQ</a></li>
+          `<li><a href="${isfaq?`./${userType}`:"."}/student_find.html">Find Tutors</a></li>` : 
+          `<li><a href="${isfaq?`./${userType}`:"."}/teacher_students.html">Students</a></li>`}
+        <li><a href="${isfaq?`./${userType}`:"."}/${userType}_chat.html">Chat</a></li>
+        <li><a href="${isfaq?`./${userType}`:"."}/${userType}_settings.html">Settings</a></li>
+        <li><a href="../faq.html?usertype=${userType}">FAQ</a></li>
         <li><a onclick="logOut()">Log Out</a></li>
       </ul>
     </div>  
