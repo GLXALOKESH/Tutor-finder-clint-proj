@@ -1,12 +1,28 @@
 import dotenv from "dotenv";
 import { prisma } from "../models/prismaClient.js";
-
+import jwt from "jsonwebtoken";
 dotenv.config();
-
 
 export const searchTeacher = async (req, res) => {
   try {
+    const { token } = req.body;
     const { searchQuery } = req.query;
+
+    if (!token) {
+      return res
+        .status(403)
+        .json({ message: "UnAuthorazied Access! Token Not found." });
+    }
+
+    const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify that token is valid and that it has the necessary permissions (student or admin)
+    if (
+      !decodeToken ||
+      decodeToken.account_type !== "student" ||
+      decodeToken.account_type !== "admin"
+    ) {
+      return req.status(403).json({ message: "Invalid Token." });
+    }
 
     if (!searchQuery) {
       return res.status(400).json({ message: "Search query is required." });
