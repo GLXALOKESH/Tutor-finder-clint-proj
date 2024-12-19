@@ -40,6 +40,7 @@ model Student {
   reviews TeacherReview[] @relation("StudentReview")
 
   request TeacherRequest[] @relation("TeacherRequest")
+  
 }
 
 model Teacher {
@@ -87,5 +88,5 @@ model TeacherRequest {
   teacher Teacher @relation("TeacherRequest", fields: [teacher_id], references: [teacher_id], onDelete: Cascade)
   student Student @relation("TeacherRequest", fields: [student_id], references: [student_id], onDelete: Cascade)
 
-  @@unique([teacher_id, student_id, isAccepted])
+  @@unique([teacher_id, student_id])
 }

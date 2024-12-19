@@ -1,6 +1,5 @@
 export const getDateTime = () => {
-  const options = { timeZone: "Asia/Kolkata" };
-  const date = new Date().toLocaleString("en-US", options);
+  const date = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
 
   return date;
 };
